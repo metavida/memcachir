@@ -80,6 +80,16 @@ defmodule Memcachir do
   end
 
   @doc """
+  Sets the key to value if the key doesn't exist already.
+  """
+  def add(key, value, opts \\ []) do
+    case key_to_node(key) do
+      {:ok, node} -> execute(&Memcache.add/4, node, [key, value, opts])
+      {:error, reason} -> {:error, "unable to add: #{reason}"}
+    end
+  end
+
+  @doc """
   increments the key by value.
   """
   def incr(key, value \\ 1, opts \\ []) do
