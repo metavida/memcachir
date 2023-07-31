@@ -46,6 +46,19 @@ defmodule Memcachir do
   end
 
   @doc """
+  Sets the key to value.
+
+  Valid option are:
+    * `:ttl` - The time in seconds that the value will be stored.
+  """
+  def set(key, value, opts \\ []) do
+    case key_to_node(key) do
+      {:ok, node} -> execute(&Memcache.set/4, node, [key, value, opts])
+      {:error, reason} -> {:error, "unable to set: #{reason}"}
+    end
+  end
+
+  @doc """
   Accepts a list of `{key, val}` pairs and returns the store results for each
   node touched.
   """
@@ -73,20 +86,6 @@ defmodule Memcachir do
     case key_to_node(key) do
       {:ok, node} -> execute(&Memcache.incr/3, node, [key, [{:by, value} | opts]])
       {:error, reason} -> {:error, "unable to inc: #{reason}"}
-    end
-  end
-
-  @doc """
-  Sets the key to value.
-
-  Valid option are:
-    * `:ttl` - The time in seconds that the value will be stored.
-
-  """
-  def set(key, value, opts \\ []) do
-    case key_to_node(key) do
-      {:ok, node} -> execute(&Memcache.set/4, node, [key, value, opts])
-      {:error, reason} -> {:error, "unable to set: #{reason}"}
     end
   end
 
